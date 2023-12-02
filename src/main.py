@@ -19,6 +19,18 @@ class Lecture:
     def __repr__(self):
         return f"Lecture({self.course_id}, {self.name}, {self.instructor}, {self.time}, {self.classroom})"
 
+def get_desired_courses():
+    desired_courses = []
+    print("원하는 학수강좌번호를 입력하세요. 완료되면 '끝'이라고 입력하세요.")
+
+    while True:
+        course_name = input("학수강좌번호: ").strip()
+        if course_name.lower() == '끝':
+            break
+        desired_courses.append(course_name)
+
+    return desired_courses
+
 def convert_time_to_decimal(time_str):
     hours, minutes = map(int, time_str.split(':'))
     decimal_time = float(f"0.{hours}{minutes:02d}")
@@ -63,6 +75,7 @@ def process_lecture_schedule(file_path):
 
 file_path = "data.xlsx"
 lectures_dict, times_dict = process_lecture_schedule(file_path)
+desired_courses = get_desired_courses()
 
 # 결과 출력을 위한 예시 코드
 for course_id, lectures in lectures_dict.items():
