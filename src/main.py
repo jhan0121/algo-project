@@ -1,4 +1,5 @@
 import openpyxl
+from itertools import product
 
 class Time:
     def __init__(self, course_id, times):
@@ -52,7 +53,6 @@ def process_lecture_schedule(file_path):
         time_str = row[8]
         classroom = row[9]
 
-        # 강의 시간을 파싱합니다.
         times = []
         if time_str:
             for part in time_str.split(','):
@@ -73,13 +73,49 @@ def process_lecture_schedule(file_path):
 
     return lectures_dict, times_dict
 
+def is_time_overlap(time1, time2):
+  return max(time1[0], time2[0]) < min(time1[1], time2[1])
+
+def are_times_overlapping(times):
+  for i in range(len(times)):
+      for j in range(i+1, len(times)):
+          if is_time_overlap(times[i], times[j]):
+              return True
+  return False
+
+def find_schedule(desired_courses, times_dict):
+  possible_combinations = product(*(times_dict[course] for course in desired_courses))
+
+  feasible_schedules = []
+  for combination in possible_combinations:
+      times = [time for lecture_times in combination for time in lecture_times.times]
+
+      if not are_times_overlapping(times):
+          feasible_schedules.append([lecture.course_id for lecture in combination])
+
+  return feasible_schedules
+
+def print_schedule_details(schedule, lectures_dict):
+  for full_course_id in schedule:
+      course_id = full_course_id.split('-')[0]
+
+      for lecture in lectures_dict[course_id]:
+          if lecture.course_id == full_course_id:
+              print(f"Lecture ID: {lecture.course_id}, Name: {lecture.name}, Instructor: {lecture.instructor}, Time: {lecture.time}, Classroom: {lecture.classroom}")
+              break  
+
+
 file_path = "data.xlsx"
 lectures_dict, times_dict = process_lecture_schedule(file_path)
 desired_courses = get_desired_courses()
+feasible_schedules = find_schedule(desired_courses, times_dict)
 
-# 결과 출력을 위한 예시 코드
-for course_id, lectures in lectures_dict.items():
-    print(f"{course_id} Lectures : {lectures}")
-
-for course_id, times in times_dict.items():
-    print(f"{course_id} Times: {times}")
+if not feasible_schedules:
+    print("가능한 시간표가 없습니다.")
+else:
+    for schedule in feasible_schedules:
+        print("--------------------------------")
+        print('')
+        print_schedule_details(schedule, lectures_dict)
+        print('')
+        print("--------------------------------")
