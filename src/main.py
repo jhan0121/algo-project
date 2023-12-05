@@ -105,7 +105,6 @@ def print_schedule_details(schedule, lectures_dict):
                 print(f"Lecture ID: {lecture.course_id}, Name: {lecture.name}, Instructor: {lecture.instructor}, Time: {lecture.time}, Classroom: {lecture.classroom}")
                 break 
 
-
 file_path = "data.xlsx"
 lectures_dict, times_dict = process_lecture_schedule(file_path)
 desired_courses = get_desired_courses()
