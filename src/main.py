@@ -1,6 +1,7 @@
 import openpyxl
 from itertools import product
 import backtracking
+import greedy
 
 class Time:
     def __init__(self, course_id, times):
@@ -116,11 +117,26 @@ backtracking_schedules = []
 backtracking.find_schedule_backtracking(desired_courses, times_dict, all_schedules=backtracking_schedules)
 backtracking_schedules = backtracking.convert_id(backtracking_schedules)
 
+#그리디 알고리즘
+greedy_schedules = greedy.find_schedule_greedy(desired_courses, times_dict)
+
 print("==========브루트포스 알고리즘==========")
 if not feasible_schedules:
     print("가능한 시간표가 없습니다.")
 else:
     for schedule in feasible_schedules:
+        print("--------------------------------")
+        print('')
+        print_schedule_details(schedule, lectures_dict)
+        print('')
+        print("--------------------------------")
+
+
+print("==========그리디 알고리즘==========")
+if not greedy_schedules:
+    print("가능한 시간표가 없습니다.")
+else:
+    for schedule in greedy_schedules:
         print("--------------------------------")
         print('')
         print_schedule_details(schedule, lectures_dict)
