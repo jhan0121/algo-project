@@ -1,5 +1,7 @@
 import openpyxl
 from itertools import product
+import backtracking
+import greedy
 
 class Time:
     def __init__(self, course_id, times):
@@ -74,46 +76,78 @@ def process_lecture_schedule(file_path):
     return lectures_dict, times_dict
 
 def is_time_overlap(time1, time2):
-  return max(time1[0], time2[0]) < min(time1[1], time2[1])
+    return max(time1[0], time2[0]) < min(time1[1], time2[1])
 
 def are_times_overlapping(times):
-  for i in range(len(times)):
-      for j in range(i+1, len(times)):
-          if is_time_overlap(times[i], times[j]):
-              return True
-  return False
+    for i in range(len(times)):
+        for j in range(i+1, len(times)):
+            if is_time_overlap(times[i], times[j]):
+                return True
+    return False
 
 def find_schedule(desired_courses, times_dict):
-  possible_combinations = product(*(times_dict[course] for course in desired_courses))
+    possible_combinations = product(*(times_dict[course] for course in desired_courses))
 
-  feasible_schedules = []
-  for combination in possible_combinations:
-      times = [time for lecture_times in combination for time in lecture_times.times]
+    feasible_schedules = []
+    for combination in possible_combinations:
+        times = [time for lecture_times in combination for time in lecture_times.times]
 
-      if not are_times_overlapping(times):
-          feasible_schedules.append([lecture.course_id for lecture in combination])
+        if not are_times_overlapping(times):
+            feasible_schedules.append([lecture.course_id for lecture in combination])
 
-  return feasible_schedules
+    return feasible_schedules
 
 def print_schedule_details(schedule, lectures_dict):
-  for full_course_id in schedule:
-      course_id = full_course_id.split('-')[0]
+    for full_course_id in schedule:
+        course_id = full_course_id.split('-')[0]
 
-      for lecture in lectures_dict[course_id]:
-          if lecture.course_id == full_course_id:
-              print(f"Lecture ID: {lecture.course_id}, Name: {lecture.name}, Instructor: {lecture.instructor}, Time: {lecture.time}, Classroom: {lecture.classroom}")
-              break  
-
+        for lecture in lectures_dict[course_id]:
+            if lecture.course_id == full_course_id:
+                print(f"Lecture ID: {lecture.course_id}, Name: {lecture.name}, Instructor: {lecture.instructor}, Time: {lecture.time}, Classroom: {lecture.classroom}")
+                break 
 
 file_path = "data.xlsx"
 lectures_dict, times_dict = process_lecture_schedule(file_path)
 desired_courses = get_desired_courses()
+
 feasible_schedules = find_schedule(desired_courses, times_dict)
 
+# 백트래킹
+backtracking_schedules = []
+backtracking.find_schedule_backtracking(desired_courses, times_dict, all_schedules=backtracking_schedules)
+backtracking_schedules = backtracking.convert_id(backtracking_schedules)
+
+#그리디 알고리즘
+greedy_schedules = greedy.find_schedule_greedy(desired_courses, times_dict)
+
+print("==========브루트포스 알고리즘==========")
 if not feasible_schedules:
     print("가능한 시간표가 없습니다.")
 else:
     for schedule in feasible_schedules:
+        print("--------------------------------")
+        print('')
+        print_schedule_details(schedule, lectures_dict)
+        print('')
+        print("--------------------------------")
+
+
+print("==========그리디 알고리즘==========")
+if not greedy_schedules:
+    print("가능한 시간표가 없습니다.")
+else:
+    for schedule in greedy_schedules:
+        print("--------------------------------")
+        print('')
+        print_schedule_details(schedule, lectures_dict)
+        print('')
+        print("--------------------------------")
+
+print("==========백트래킹 알고리즘==========")
+if not backtracking_schedules:
+    print("가능한 시간표가 없습니다.")
+else:
+    for schedule in backtracking_schedules:
         print("--------------------------------")
         print('')
         print_schedule_details(schedule, lectures_dict)
