@@ -1,4 +1,7 @@
 #그리디 알고리즘    
+
+comp = 0 # 비교 횟수
+
 def is_conflict(schedule, new_course): # 시간표 충돌 확인용
     for scheduled_course in schedule:
         for scheduled_time in scheduled_course.times:
@@ -8,6 +11,8 @@ def is_conflict(schedule, new_course): # 시간표 충돌 확인용
     return False
 
 def is_time_overlap(time1, time2):
+    global comp
+    comp += 1
     return max(time1[0], time2[0]) < min(time1[1], time2[1])        
 
 # 결과 중복 제거용 함수
