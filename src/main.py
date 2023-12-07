@@ -121,7 +121,8 @@ else:
         print("--------------------------------")
 
 #그리디 알고리즘
-feasible_schedules = greedy.find_schedule_greedy(desired_courses, times_dict)
+feasible_schedules= greedy.find_schedule_greedy(desired_courses, times_dict)
+greedy_comp = greedy.comp
 
 if not feasible_schedules:
     print("가능한 시간표가 없습니다.")
